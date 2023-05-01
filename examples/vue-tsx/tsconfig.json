@@ -10,7 +10,7 @@
     ],
     "paths": {
       "vue-hooks": [
-        "./src/"
+        "../../src"
       ],
     },
     "skipLibCheck": true,
