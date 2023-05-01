@@ -4,10 +4,10 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	resolve: {
+  resolve: {
     alias: {
-			'vue-hooks': `${process.cwd()}/../../src`,
-
-		}},
-	plugins: [vue(), vueJsx()],
+      "vue-hooks": `${process.cwd()}/../../src`,
+    },
+  },
+  plugins: [vue(), vueJsx()],
 });
