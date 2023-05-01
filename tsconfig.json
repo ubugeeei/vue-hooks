@@ -7,11 +7,6 @@
       "DOM"
     ],
     "strict": true,
-    "paths": {
-      "vue-hooks": [
-        "./src/"
-      ],
-    },
     "moduleResolution": "node",
     "esModuleInterop": true,
   },
