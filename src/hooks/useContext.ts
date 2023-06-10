@@ -6,8 +6,12 @@ class _Wrapper_<T> {
   }
 }
 
+const Key = Symbol();
+
 type Context<T> = ReturnType<_Wrapper_<T>["f"]>;
 export const createContext = <T>(value: T | null) => {
+  const key: InjectionKey<{ value: T }> = Symbol();
+
   const Provider = defineComponent({
     props: {
       value: {
@@ -23,11 +27,9 @@ export const createContext = <T>(value: T | null) => {
     },
   });
 
-  const key: InjectionKey<{ value: T }> = Symbol();
-
-  return { key, Provider };
+  return { [Key]: key, Provider };
 };
 
 export const useContext = <T>(ctx: Context<T>): T | null => {
-  return inject(ctx.key)?.value ?? null;
+  return inject(ctx[Key])?.value ?? null;
 };
