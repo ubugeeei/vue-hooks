@@ -87,6 +87,9 @@ export default defineComponent(() => () => {
 ## useEffect
 
 ```tsx
+import { defineComponent } from "vue";
+import { useState, useEffect } from "vue-hooks";
+
 export default defineComponent(() => () => {
   const [count, setCount] = useState(0);
 
@@ -173,6 +176,9 @@ export default defineComponent(() => () => {
 ## useCallback
 
 ```tsx
+import { defineComponent } from "vue";
+import { useState, useCallback } from "vue-hooks";
+
 export default defineComponent(() => () => {
   const handleClick = (e: MouseEvent) => {
     console.log(e);
@@ -209,6 +215,9 @@ const Btn = defineComponent(
 ## useRef
 
 ```tsx
+import { defineComponent } from "vue";
+import { useState, useRef } from "vue-hooks";
+
 export default defineComponent(() => () => {
   const [count, setCount] = useState(0);
   const intervalRef = useRef<number | null>(null);
@@ -242,6 +251,9 @@ export default defineComponent(() => () => {
 manipulating the DOM
 
 ```tsx
+import { defineComponent } from "vue";
+import { useRef } from "vue-hooks";
+
 export default defineComponent(() => () => {
   const inputRef = useRef<HTMLInputElement | undefined>(undefined);
 
