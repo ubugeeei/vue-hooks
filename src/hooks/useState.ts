@@ -1,37 +1,33 @@
-import { ComponentInternalInstance, getCurrentInstance } from "vue";
-
-const COMPONENT_STATES = Symbol();
-const COMPONENT_STATES_IDX = Symbol();
+import { getCurrentInstance } from "vue";
+import { ComponentStates, ComponentStatesIdx, render } from "./internal";
 
 export const useState = <T>(
   initialState: T
 ): [T, (newState: T | ((prev: T) => T)) => void] => {
-  const i = getCurrentInstance() as ComponentInternalInstance & {
-    [COMPONENT_STATES]?: any[];
-    [COMPONENT_STATES_IDX]?: number;
-  };
+  const i = getCurrentInstance();
+  if (!i) throw new Error("useState must be called in setup function");
 
   // init
-  if (i[COMPONENT_STATES] === undefined) i[COMPONENT_STATES] = [];
-  if (i[COMPONENT_STATES_IDX] === undefined) i[COMPONENT_STATES_IDX] = 0;
+  if (i[ComponentStates] === undefined) i[ComponentStates] = [];
+  if (i[ComponentStatesIdx] === undefined) i[ComponentStatesIdx] = 0;
 
-  const currentIdx = i[COMPONENT_STATES_IDX];
-  const state = i[COMPONENT_STATES][currentIdx] ?? initialState;
-  i[COMPONENT_STATES][currentIdx] = state;
+  const currentIdx = i[ComponentStatesIdx];
+  const state = i[ComponentStates][currentIdx] ?? initialState;
+  i[ComponentStates][currentIdx] = state;
 
   const setState = (newState: T | ((prev: T) => T)) => {
     if (typeof newState === "function") {
-      i[COMPONENT_STATES]![currentIdx] = (newState as (prev: T) => T)(
-        i[COMPONENT_STATES]?.[currentIdx] ?? initialState
+      // use updater function
+      i[ComponentStates]![currentIdx] = (newState as (prev: T) => T)(
+        i[ComponentStates]![currentIdx]
       );
     } else {
-      i[COMPONENT_STATES]![currentIdx] = newState;
+      i[ComponentStates]![currentIdx] = newState;
     }
-    i[COMPONENT_STATES_IDX] = 0;
-    i.update();
+    render(i);
   };
 
-  i[COMPONENT_STATES_IDX]++;
+  i[ComponentStatesIdx]++;
 
   return [state, setState];
 };
