@@ -10,7 +10,7 @@ hooks api like react-hooks in vue
 import { defineComponent } from "vue";
 import { useState } from "vue-hooks";
 
-export default defineComponent({}, () => {
+export default defineComponent(() => () => {
   const [count, setCount] = useState(0);
   const increment = () => {
     setCount(count + 1);
