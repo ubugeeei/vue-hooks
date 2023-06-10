@@ -1,6 +1,6 @@
 # vue-hooks
 
-hooks api like react-hooks in vue
+"Non-Reactive API", a new API concept in Vue.js. (inspired by React)
 
 # API Reference
 
