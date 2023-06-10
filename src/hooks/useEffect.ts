@@ -1,7 +1,10 @@
 import { getCurrentInstance, onBeforeUnmount } from "vue";
 import { ComponentEffectDepsList, ComponentEffectDepsIdx } from "./internal";
 
-export const useEffect = (callBack: () => () => void, nextDeps: any[]) => {
+export const useEffect = (
+  callBack: () => (() => void) | void,
+  nextDeps: any[]
+) => {
   const i = getCurrentInstance();
   if (!i) throw new Error("useEffect must be called in setup function");
 
@@ -14,12 +17,12 @@ export const useEffect = (callBack: () => () => void, nextDeps: any[]) => {
 
   if (!currentDeps) {
     const cleanUp = callBack();
-    onBeforeUnmount(cleanUp, i);
+    cleanUp && onBeforeUnmount(cleanUp, i);
   } else {
     const changed = currentDeps.some((item, idx) => item !== nextDeps[idx]);
     if (changed) {
       const cleanUp = callBack();
-      onBeforeUnmount(cleanUp, i);
+      cleanUp && onBeforeUnmount(cleanUp, i);
     }
   }
 
