@@ -11,13 +11,13 @@ export const useMemo = <T>(callBack: () => T, nextDeps: any[]): T => {
 
   const currentIdx = i[ComponentMemosIdx];
   const memo = i[ComponentMemos][currentIdx];
-  const memoVal = memo ? memo[0] : undefined;
-  const memoDeps = memo ? memo[1] : [];
 
   let value: T;
+
   if (!memo) {
     value = callBack();
   } else {
+    const [memoVal, memoDeps] = memo;
     const changed = memoDeps.some((item, idx) => item !== nextDeps[idx]);
     if (changed) {
       value = callBack();

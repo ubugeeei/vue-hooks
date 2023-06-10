@@ -8,6 +8,10 @@ export const ComponentStatesIdx = Symbol();
 export const ComponentMemos = Symbol();
 export const ComponentMemosIdx = Symbol();
 
+// callback
+export const ComponentCallbacks = Symbol();
+export const ComponentCallbacksIdx = Symbol();
+
 // ref
 export const ComponentRefs = Symbol();
 export const ComponentRefsIdx = Symbol();
@@ -26,6 +30,10 @@ declare module "vue" {
     [ComponentMemos]?: [value: any, deps: any[][]][];
     [ComponentMemosIdx]?: number;
 
+    // callback
+    [ComponentCallbacks]?: [cb: Function, deps: any[][]][];
+    [ComponentCallbacksIdx]?: number;
+
     // ref
     [ComponentRefs]?: Ref<any>[];
     [ComponentRefsIdx]?: number;
@@ -39,6 +47,7 @@ declare module "vue" {
 export const render = (instance: ComponentInternalInstance) => {
   instance[ComponentStatesIdx] = 0;
   instance[ComponentMemosIdx] = 0;
+  instance[ComponentCallbacksIdx] = 0;
   instance[ComponentRefsIdx] = 0;
   instance[ComponentEffectDepsIdx] = 0;
   instance.update();
