@@ -1,4 +1,5 @@
 import { ComponentInternalInstance } from "vue";
+import { Ref } from "./useRef";
 
 // state
 export const ComponentStates = Symbol();
@@ -7,6 +8,10 @@ export const ComponentStatesIdx = Symbol();
 // memo
 export const ComponentMemos = Symbol();
 export const ComponentMemosIdx = Symbol();
+
+// ref
+export const ComponentRefs = Symbol();
+export const ComponentRefsIdx = Symbol();
 
 // effect
 export const ComponentEffectDepsList = Symbol();
@@ -22,6 +27,10 @@ declare module "vue" {
     [ComponentMemos]?: [value: any, deps: any[][]][];
     [ComponentMemosIdx]?: number;
 
+    // ref
+    [ComponentRefs]?: Ref<any>[];
+    [ComponentRefsIdx]?: number;
+
     // effect
     [ComponentEffectDepsList]?: any[][];
     [ComponentEffectDepsIdx]?: number;
@@ -30,6 +39,8 @@ declare module "vue" {
 
 export const render = (instance: ComponentInternalInstance) => {
   instance[ComponentStatesIdx] = 0;
+  instance[ComponentMemosIdx] = 0;
+  instance[ComponentRefsIdx] = 0;
   instance[ComponentEffectDepsIdx] = 0;
   instance.update();
 };
