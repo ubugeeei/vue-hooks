@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { useMemo, useState } from "vue-hooks";
+import { useEffect, useMemo, useState } from "vue-hooks";
 
 type Todo = {
   id: number;
@@ -32,15 +32,18 @@ const filterTodos = (todos: Todo[], isDone: boolean) => {
 
 export default defineComponent(() => () => {
   const [count, setCount] = useState(0);
-  const [isDone, setIsDone] = useState(false);
+  const double = count * 2;
 
-  // when `setCount` called, this component is re-rendered. but `filterTodos` is not called.
+  const [isDone, setIsDone] = useState(false);
   const visibleTodos = useMemo(() => filterTodos(todos, isDone), [isDone]);
+
+  const [isShowChild, setIsShowChild] = useState(true);
 
   return (
     <div>
       <div>
         <div>count: {count}</div>
+        <div>double: {double}</div>
         <button onClick={() => setCount(count + 1)}>+1</button>
       </div>
 
@@ -54,6 +57,31 @@ export default defineComponent(() => () => {
           ))}
         </ul>
       </div>
+
+      <div>
+        <button onClick={() => setIsShowChild(!isShowChild)}>
+          toggle child visibility
+        </button>
+        {isShowChild && <Child />}
+      </div>
     </div>
   );
+});
+
+const Child = defineComponent(() => () => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("interval");
+      setCount((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      console.log("clear interval");
+      clearInterval(interval);
+    };
+  }, []);
+
+  return <p> child {count}</p>;
 });

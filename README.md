@@ -87,83 +87,22 @@ export default defineComponent(() => () => {
 ## useEffect
 
 ```tsx
-import { defineComponent } from "vue";
-import { useEffect, useState } from "vue-hooks";
-
 export default defineComponent(() => () => {
   const [count, setCount] = useState(0);
-  const double = count * 2;
+
   useEffect(() => {
-    console.log("on render component");
-  });
+    const interval = setInterval(() => {
+      console.log("interval");
+      setCount((prev) => prev + 1);
+    }, 1000);
 
-  return (
-    <div>
-      <div>count: {count}</div>
-      <div>double: {double}</div>
-      <button
-        onClick={() => {
-          setCount(count + 1);
-        }}
-      >
-        +3
-      </button>
-    </div>
-  );
-});
-```
-
-```tsx
-import { defineComponent } from "vue";
-import { useEffect, useState } from "vue-hooks";
-
-export default defineComponent(() => () => {
-  const [count, setCount] = useState(0);
-  const double = count * 2;
-  useEffect(() => {
-    console.log("only called on count changed");
-  }, [count]);
-
-  return (
-    <div>
-      <div>count: {count}</div>
-      <div>double: {double}</div>
-      <button
-        onClick={() => {
-          setCount(count + 1);
-        }}
-      >
-        +3
-      </button>
-    </div>
-  );
-});
-```
-
-```tsx
-import { defineComponent } from "vue";
-import { useEffect, useState } from "vue-hooks";
-
-export default defineComponent(() => () => {
-  const [count, setCount] = useState(0);
-  const double = count * 2;
-  useEffect(() => {
-    console.log("only called once");
+    return () => {
+      console.log("clear interval");
+      clearInterval(interval);
+    };
   }, []);
 
-  return (
-    <div>
-      <div>count: {count}</div>
-      <div>double: {double}</div>
-      <button
-        onClick={() => {
-          setCount(count + 1);
-        }}
-      >
-        +3
-      </button>
-    </div>
-  );
+  return <p>{count}</p>;
 });
 ```
 
