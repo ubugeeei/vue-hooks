@@ -1,5 +1,4 @@
-import { ComponentInternalInstance } from "vue";
-import { Ref } from "./useRef";
+import { ComponentInternalInstance, Ref } from "vue";
 
 // state
 export const ComponentStates = Symbol();

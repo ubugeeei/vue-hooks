@@ -1,9 +1,6 @@
-import { getCurrentInstance } from "vue";
-import { ComponentStates, ComponentStatesIdx, render } from "./internal";
+import { ref as vueRef, Ref, getCurrentInstance } from "vue";
+import { ComponentStates, ComponentStatesIdx } from "./internal";
 
-export interface Ref<T> {
-  current: T;
-}
 export const useRef = <T>(initialState: T): Ref<T> => {
   const i = getCurrentInstance();
   if (!i) throw new Error("useState must be called in setup function");
@@ -14,14 +11,14 @@ export const useRef = <T>(initialState: T): Ref<T> => {
 
   const currentIdx = i[ComponentStatesIdx];
 
-  let ref;
+  let ref: ReturnType<typeof vueRef>;
   if (i[ComponentStates][currentIdx] === undefined) {
-    ref = { current: initialState };
+    ref = vueRef<T>(initialState);
     i[ComponentStates][currentIdx] = ref;
   } else {
     ref = i[ComponentStates][currentIdx];
   }
   i[ComponentStatesIdx]++;
 
-  return ref;
+  return ref as Ref<T>;
 };

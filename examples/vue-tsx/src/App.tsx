@@ -1,6 +1,6 @@
 import { defineComponent } from "vue";
 import { EffectSample } from "./Effect";
-import { RefSample } from "./Ref";
+import { ElementRefSample, RefSample } from "./Ref";
 import { StateSample } from "./State";
 import { MemoSample } from "./Memo";
 
@@ -21,6 +21,9 @@ export default defineComponent(() => () => {
 
       <h1>Ref Sample</h1>
       <RefSample />
+
+      <h1>ElementRef Sample</h1>
+      <ElementRefSample />
     </div>
   );
 });
