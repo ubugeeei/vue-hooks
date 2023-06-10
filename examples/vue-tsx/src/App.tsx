@@ -10,35 +10,35 @@ import { ContextSample } from "./Context";
 export default defineComponent(() => () => {
   return (
     <div>
-      <h1>State Sample</h1>
+      <h1>useState</h1>
       <StateSample />
       <hr />
 
-      <h1>Memo Sample</h1>
+      <h1>useMemo</h1>
       <MemoSample />
       <hr />
 
-      <h1>CallBack Sample</h1>
+      <h1>useCallBack</h1>
       <CallBackSample />
       <hr />
 
-      <h1>Effect Sample</h1>
+      <h1>useEffect</h1>
       <EffectSample />
       <hr />
 
-      <h1>Ref Sample</h1>
+      <h1>useRef</h1>
       <RefSample />
       <hr />
 
-      <h1>ElementRef Sample</h1>
+      <h1>useElementRef</h1>
       <ElementRefSample />
       <hr />
 
-      <h1>Reducer Sample</h1>
+      <h1>useReducer</h1>
       <ReducerSample />
       <hr />
 
-      <h1>Context Sample</h1>
+      <h1>useContext</h1>
       <ContextSample />
     </div>
   );
