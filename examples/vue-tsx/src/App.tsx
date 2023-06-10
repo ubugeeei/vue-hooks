@@ -5,6 +5,7 @@ import { StateSample } from "./State";
 import { MemoSample } from "./Memo";
 import { CallBackSample } from "./Callback";
 import { ReducerSample } from "./Reducer";
+import { ContextSample } from "./Context";
 
 export default defineComponent(() => () => {
   return (
@@ -35,6 +36,10 @@ export default defineComponent(() => () => {
 
       <h1>Reducer Sample</h1>
       <ReducerSample />
+      <hr />
+
+      <h1>Context Sample</h1>
+      <ContextSample />
     </div>
   );
 });
