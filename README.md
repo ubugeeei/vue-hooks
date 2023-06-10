@@ -214,19 +214,19 @@ export default defineComponent(() => () => {
   const intervalRef = useRef<number | null>(null);
 
   const startInterval = () => {
-    if (intervalRef.current !== null) {
+    if (intervalRef.value !== null) {
       console.warn("interval already started");
       return;
     }
-    intervalRef.current = window.setInterval(() => {
+    intervalRef.value = window.setInterval(() => {
       setCount((prev) => prev + 1);
     }, 1000);
   };
 
   const stopInterval = () => {
-    if (intervalRef.current === null) return;
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
+    if (intervalRef.value === null) return;
+    clearInterval(intervalRef.value);
+    intervalRef.value = null;
   };
 
   return (
@@ -234,6 +234,26 @@ export default defineComponent(() => () => {
       <div>count: {count}</div>
       <button onClick={startInterval}>start interval</button>
       <button onClick={stopInterval}>stop interval</button>
+    </div>
+  );
+});
+```
+
+manipulating the DOM
+
+```tsx
+export default defineComponent(() => () => {
+  const inputRef = useRef<HTMLInputElement | undefined>(undefined);
+
+  const focusInput = () => {
+    if (inputRef.value === null) return;
+    inputRef.value?.focus();
+  };
+
+  return (
+    <div>
+      <input ref={inputRef} />
+      <button onClick={focusInput}>focus input</button>
     </div>
   );
 });
