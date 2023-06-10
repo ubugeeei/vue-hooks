@@ -20,6 +20,10 @@ export const ComponentRefsIdx = Symbol();
 export const ComponentEffectDepsList = Symbol();
 export const ComponentEffectDepsIdx = Symbol();
 
+// reducer
+export const ComponentReducers = Symbol();
+export const ComponentReducersIdx = Symbol();
+
 declare module "vue" {
   interface ComponentInternalInstance {
     // state
@@ -41,6 +45,10 @@ declare module "vue" {
     // effect
     [ComponentEffectDepsList]?: any[][];
     [ComponentEffectDepsIdx]?: number;
+
+    // reducer
+    [ComponentReducers]?: any[];
+    [ComponentReducersIdx]?: number;
   }
 }
 
@@ -50,5 +58,6 @@ export const render = (instance: ComponentInternalInstance) => {
   instance[ComponentCallbacksIdx] = 0;
   instance[ComponentRefsIdx] = 0;
   instance[ComponentEffectDepsIdx] = 0;
+  instance[ComponentReducersIdx] = 0;
   instance.update();
 };
