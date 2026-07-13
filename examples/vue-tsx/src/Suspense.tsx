@@ -1,23 +1,13 @@
 import { defineComponent } from "vue";
-import { Suspense, use, useState } from "vue-hooks";
+import { Suspense, cache, use, useState } from "vue-hooks";
 
 type User = { id: number; name: string };
 
 const fetchUser = (id: number): Promise<User> =>
-  new Promise((resolve) =>
-    setTimeout(() => resolve({ id, name: `user ${id}` }), 1000)
-  );
+  new Promise((resolve) => setTimeout(() => resolve({ id, name: `user ${id}` }), 1000));
 
-// the promise identity must be stable across renders
-const cache = new Map<number, Promise<User>>();
-const getUser = (id: number) => {
-  let user = cache.get(id);
-  if (!user) {
-    user = fetchUser(id);
-    cache.set(id, user);
-  }
-  return user;
-};
+// `cache` keeps the promise identity stable across renders
+const getUser = cache(fetchUser);
 
 export const SuspenseSample = defineComponent(() => () => {
   const [userId, setUserId] = useState(1);
@@ -41,5 +31,5 @@ const UserName = defineComponent(
     props: {
       userId: { type: Number, required: true },
     },
-  }
+  },
 );

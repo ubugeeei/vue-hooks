@@ -8,6 +8,11 @@ import { ReducerSample } from "./Reducer";
 import { ContextSample } from "./Context";
 import { SuspenseSample } from "./Suspense";
 import { ActionStateSample } from "./ActionState";
+import { TransitionSample } from "./Transition";
+import { DeferredValueSample } from "./DeferredValue";
+import { OptimisticSample } from "./Optimistic";
+import { ActivitySample } from "./Activity";
+import { SyncExternalStoreSample } from "./SyncExternalStore";
 
 export default defineComponent(() => () => {
   return (
@@ -50,6 +55,26 @@ export default defineComponent(() => () => {
 
       <h1>useActionState</h1>
       <ActionStateSample />
+      <hr />
+
+      <h1>useTransition / ViewTransition</h1>
+      <TransitionSample />
+      <hr />
+
+      <h1>useDeferredValue</h1>
+      <DeferredValueSample />
+      <hr />
+
+      <h1>useOptimistic / Form / useFormStatus</h1>
+      <OptimisticSample />
+      <hr />
+
+      <h1>Activity</h1>
+      <ActivitySample />
+      <hr />
+
+      <h1>useSyncExternalStore</h1>
+      <SyncExternalStoreSample />
     </div>
   );
 });

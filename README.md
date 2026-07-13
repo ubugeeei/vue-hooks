@@ -90,6 +90,7 @@ export default defineComponent(() => () => {
 ## useEffect
 
 The effect callback runs **after** the component is mounted, and re-runs after the DOM has been patched when one of the deps has changed (omit the deps to run after every render).
+Passive effects are deferred to a macrotask (after paint); use `useLayoutEffect` to run synchronously right after the DOM update, before paint.
 The cleanup function runs before the effect re-runs, and when the component is unmounted.
 
 ```tsx
@@ -113,6 +114,18 @@ export default defineComponent(() => () => {
 
   return <p>{count}</p>;
 });
+```
+
+## useLayoutEffect
+
+Like `useEffect`, but runs synchronously right after the DOM has been patched, before the browser paints.
+Use it to measure layout or to mutate the DOM before it becomes visible.
+
+```tsx
+useLayoutEffect(() => {
+  const rect = elementRef.value?.getBoundingClientRect();
+  // ... adjust the DOM before paint
+}, [deps]);
 ```
 
 ## useMemo
@@ -165,9 +178,7 @@ export default defineComponent(() => () => {
       </div>
 
       <div>
-        <button onClick={() => setIsDone(!isDone)}>
-          {isDone ? "show not done" : "show done"}
-        </button>
+        <button onClick={() => setIsDone(!isDone)}>{isDone ? "show not done" : "show done"}</button>
         <ul>
           {visibleTodos.map((todo) => (
             <li key={todo.id}>{todo.text}</li>
@@ -214,7 +225,7 @@ const Btn = defineComponent(
     props: {
       onClick: { type: Function as PropType<(payload: MouseEvent) => void> },
     },
-  }
+  },
 );
 ```
 
@@ -340,27 +351,19 @@ const Child = defineComponent(() => () => {
 While the promise is pending, the component suspends and the nearest `Suspense` boundary renders its fallback.
 Once the promise settles, the boundary re-renders its children and `use` returns the resolved value.
 
-NOTE: the promise identity must be stable across renders (create it outside of the component or cache it), otherwise the component suspends forever.
+NOTE: the promise identity must be stable across renders (create it outside of the component or memoize it with `cache`), otherwise the component suspends forever.
 
 ```tsx
 import { defineComponent } from "vue";
-import { Suspense, use } from "vue-hooks";
+import { Suspense, cache, use } from "vue-hooks";
 
 type User = { id: number; name: string };
 
 const fetchUser = (id: number): Promise<User> =>
   fetch(`/api/users/${id}`).then((res) => res.json());
 
-// the promise identity must be stable across renders
-const cache = new Map<number, Promise<User>>();
-const getUser = (id: number) => {
-  let user = cache.get(id);
-  if (!user) {
-    user = fetchUser(id);
-    cache.set(id, user);
-  }
-  return user;
-};
+// `cache` keeps the promise identity stable across renders
+const getUser = cache(fetchUser);
 
 export default defineComponent(() => () => (
   <Suspense fallback={<p>loading...</p>}>
@@ -377,7 +380,7 @@ const Profile = defineComponent(
     props: {
       userId: { type: Number, required: true },
     },
-  }
+  },
 );
 ```
 
@@ -418,4 +421,301 @@ export default defineComponent(() => () => {
     </div>
   );
 });
+```
+
+## useOptimistic
+
+Returns an optimistic view of a state.
+`addOptimistic(value)` immediately re-renders with the optimistic value applied; the optimistic values are dropped as soon as the real state changes (e.g. when the action driving it settles).
+
+```tsx
+import { defineComponent } from "vue";
+import { useOptimistic, useState } from "vue-hooks";
+
+export default defineComponent(() => () => {
+  const [messages, setMessages] = useState<string[]>([]);
+  const [optimisticMessages, addOptimistic] = useOptimistic(messages, (current, m: string) => [
+    ...current,
+    `${m} (sending...)`,
+  ]);
+
+  const send = async (message: string) => {
+    addOptimistic(message); // shown immediately
+    const sent = await sendToServer(message);
+    setMessages((prev) => [...prev, sent]); // the real state catches up
+  };
+
+  return (
+    <ul>
+      {optimisticMessages.map((message, idx) => (
+        <li key={idx}>{message}</li>
+      ))}
+    </ul>
+  );
+});
+```
+
+## Form / useFormStatus
+
+`Form` is a `<form>` driven by an action function, like React's form actions.
+On submit, the action receives the form's `FormData`; descendants can read the submission status with `useFormStatus`. The form is reset after the action fulfills.
+
+```tsx
+import { defineComponent } from "vue";
+import { Form, useFormStatus } from "vue-hooks";
+
+const action = async (formData: FormData) => {
+  await sendToServer(String(formData.get("message")));
+};
+
+export default defineComponent(() => () => (
+  <Form action={action}>
+    <input name="message" />
+    <SubmitButton />
+  </Form>
+));
+
+const SubmitButton = defineComponent(() => () => {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending}>
+      {pending ? "sending..." : "send"}
+    </button>
+  );
+});
+```
+
+## useTransition / startTransition / addTransitionType
+
+`startTransition` runs a scope as a (non-urgent) transition; the scope may be async.
+`useTransition` additionally exposes an `isPending` flag that is `true` until the scope (and the DOM updates it scheduled) has settled.
+`addTransitionType` tags the transition currently being started; the types are forwarded to the View Transitions API (see `ViewTransition`).
+
+```tsx
+import { defineComponent } from "vue";
+import { addTransitionType, useState, useTransition } from "vue-hooks";
+
+export default defineComponent(() => () => {
+  const [tab, setTab] = useState("home");
+  const [isPending, startTransition] = useTransition();
+
+  const select = (next: string) => {
+    startTransition(async () => {
+      addTransitionType(`to-${next}`);
+      await loadTab(next);
+      setTab(next);
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={() => select("about")}>about</button>
+      {isPending && <span>loading...</span>}
+      <p>{tab}</p>
+    </div>
+  );
+});
+```
+
+## ViewTransition
+
+While at least one `ViewTransition` boundary is mounted, transitions started with `startTransition` apply their DOM update through `document.startViewTransition`, so the change is animated by the browser View Transitions API.
+When `name` is given, it is assigned to the children as their `view-transition-name`.
+Types added with `addTransitionType` can be matched in CSS with `:active-view-transition-type()`.
+
+```tsx
+<ViewTransition name="tab-panel">
+  <p>{tab === "home" ? "Welcome home!" : "About."}</p>
+</ViewTransition>
+```
+
+## useDeferredValue
+
+Returns the previous value while a new value is being deferred: when the value changes, the returned value lags one scheduler flush behind, so urgent updates (e.g. typing) stay responsive.
+
+```tsx
+import { defineComponent } from "vue";
+import { useDeferredValue, useMemo, useState } from "vue-hooks";
+
+export default defineComponent(() => () => {
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+
+  // the heavy work only re-runs when the deferred value catches up
+  const results = useMemo(() => search(deferredQuery), [deferredQuery]);
+
+  return (
+    <div>
+      <input value={query} onInput={(e) => setQuery((e.target as HTMLInputElement).value)} />
+      <ul>
+        {results.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+});
+```
+
+## useSyncExternalStore
+
+Subscribes to an external store and re-renders when it notifies a change.
+The subscription is removed when the component unmounts.
+
+```tsx
+import { defineComponent } from "vue";
+import { useSyncExternalStore } from "vue-hooks";
+
+const widthStore = {
+  subscribe: (onStoreChange: () => void) => {
+    window.addEventListener("resize", onStoreChange);
+    return () => window.removeEventListener("resize", onStoreChange);
+  },
+  getSnapshot: () => window.innerWidth,
+};
+
+export default defineComponent(() => () => {
+  const width = useSyncExternalStore(widthStore.subscribe, widthStore.getSnapshot);
+  return <p>window width: {width}px</p>;
+});
+```
+
+## useId
+
+Returns a unique ID that is stable across re-renders of the component.
+
+```tsx
+export default defineComponent(() => () => {
+  const id = useId();
+  return (
+    <div>
+      <label for={id}>name</label>
+      <input id={id} />
+    </div>
+  );
+});
+```
+
+## useImperativeHandle
+
+Exposes a custom handle on a ref passed down from the parent, instead of the raw DOM element.
+
+```tsx
+import { defineComponent } from "vue";
+import { useImperativeHandle, useRef } from "vue-hooks";
+
+const FancyInput = defineComponent(
+  (props: { handle: Ref<{ focus: () => void } | null> }) => () => {
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    useImperativeHandle(props.handle, () => ({ focus: () => inputRef.value?.focus() }), []);
+    return <input ref={inputRef} />;
+  },
+  { props: { handle: { type: Object, required: true } } },
+);
+
+export default defineComponent(() => () => {
+  const handle = useRef<{ focus: () => void } | null>(null);
+  return (
+    <div>
+      <FancyInput handle={handle} />
+      <button onClick={() => handle.value?.focus()}>focus</button>
+    </div>
+  );
+});
+```
+
+## useEffectEvent
+
+Returns a stable function that always calls the implementation from the latest render, so it can be used inside effects without being listed in (or re-triggering) their deps.
+
+```tsx
+export default defineComponent(() => () => {
+  const [count] = useState(0);
+  const [url, setUrl] = useState("/");
+
+  const onVisit = useEffectEvent(() => {
+    log(url, count); // always reads the latest count
+  });
+
+  useEffect(() => {
+    onVisit();
+  }, [url]); // re-runs only when the url changes
+
+  return <p>{url}</p>;
+});
+```
+
+## StrictMode
+
+In descendant components, the render runs one extra time after mount and the first run of every effect is invoked twice (run - cleanup - run), to surface impure renders and missing effect cleanups.
+
+```tsx
+export default defineComponent(() => () => (
+  <StrictMode>
+    <App />
+  </StrictMode>
+));
+```
+
+## Activity
+
+Hides and shows its children while preserving their state.
+Unlike conditional rendering, a hidden child stays mounted (its DOM is hidden with `display: none`), so state is kept while it is invisible.
+
+```tsx
+<Activity mode={visible ? "visible" : "hidden"}>
+  <ExpensiveTree />
+</Activity>
+```
+
+## cache / cacheSignal
+
+`cache(fn)` memoizes a function by argument identity: calling the cached function twice with the same arguments returns the same result.
+This also makes it a natural companion of `use` + `Suspense` (stable promise identity across renders).
+
+```tsx
+const getUser = cache((id: number) => fetch(`/api/users/${id}`).then((res) => res.json()));
+
+getUser(1) === getUser(1); // true
+```
+
+`cacheSignal()` returns an `AbortSignal` scoped to the lifetime of the current component (aborted when it unmounts), or `null` outside of a component.
+
+```tsx
+const UserName = defineComponent(
+  (props: { userId: number }) => () => {
+    const signal = cacheSignal();
+    const user = use(getUser(props.userId, signal));
+    return <p>{user.name}</p>;
+  },
+  { props: { userId: { type: Number, required: true } } },
+);
+```
+
+## act
+
+Test helper: runs the callback, then flushes Vue's scheduler queue and all pending effects (layout and passive) until the work settles, so assertions run against the committed result.
+
+```ts
+import { act, useState } from "vue-hooks";
+
+it("increments", async () => {
+  const { el } = mount(Counter);
+  await act(() => {
+    increment();
+  });
+  expect(el.textContent).toBe("count: 1");
+});
+```
+
+# Development
+
+This repository is a [Vite+](https://viteplus.dev/) workspace. Everything is configured from the root `vite.config.ts`.
+
+```bash
+vp install         # install dependencies
+vp run vue-tsx#dev # start the example app (examples/vue-tsx)
+vp test            # run the unit tests (Vitest)
+vp check           # format, lint, and type check
+vp pack            # build the library (dist/)
 ```
