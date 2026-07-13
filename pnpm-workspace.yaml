@@ -1,2 +1,21 @@
 packages:
   - "examples/*"
+
+catalog:
+  "@types/node": ^26.1.1
+  "@vitejs/plugin-vue-jsx": ^5.1.6
+  "@vitest/browser-playwright": 4.1.10
+  "@voidzero-dev/vite-plus-core": ^0.2.4
+  typescript: ^7.0.2
+  vite: npm:@voidzero-dev/vite-plus-core@^0.2.4
+  vite-plus: ^0.2.4
+  vitest: 4.1.10
+  vue: ^3.5.39
+
+overrides:
+  vite: npm:@voidzero-dev/vite-plus-core@^0.2.4
+  vitest: 4.1.10
+
+peerDependencyRules:
+  allowedVersions:
+    vite: "*"
