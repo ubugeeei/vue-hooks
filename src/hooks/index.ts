@@ -5,4 +5,5 @@ export * from "./useRef";
 export * from "./useEffect";
 export * from "./useReducer";
 export * from "./useContext";
+export * from "./useActionState";
 export * from "./use";
