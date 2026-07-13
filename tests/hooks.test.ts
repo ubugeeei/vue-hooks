@@ -187,16 +187,12 @@ describe("useEffectEvent", () => {
 describe("useImperativeHandle", () => {
   it("exposes a handle on the given ref and clears it on unmount", async () => {
     const handleRef: Ref<{ hello: () => string } | null> = ref(null);
-    const Child = defineComponent({
-      props: ["handle"],
-      setup: (props) => () => {
-        useImperativeHandle(props.handle, () => ({ hello: () => "hi" }), []);
-        return h("input");
-      },
+    const Comp = defineComponent(() => () => {
+      useImperativeHandle(handleRef, () => ({ hello: () => "hi" }), []);
+      return h("input");
     });
-    const Root = defineComponent(() => () => h(Child, { handle: handleRef }));
 
-    const { unmount } = mount(Root);
+    const { unmount } = mount(Comp);
     await act(async () => {});
     expect(handleRef.value?.hello()).toBe("hi");
 

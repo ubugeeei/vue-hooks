@@ -59,7 +59,7 @@ const scheduleEffectsFlush = (i: ComponentInternalInstance) => {
   i[ComponentEffectsFlushScheduled] = true;
   pendingEffectsFlushes++;
 
-  nextTick(() => {
+  void nextTick(() => {
     i[ComponentEffectsFlushScheduled] = false;
     if (i.isUnmounted) {
       pendingEffectsFlushes--;

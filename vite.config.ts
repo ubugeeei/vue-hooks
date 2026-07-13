@@ -1,5 +1,6 @@
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite-plus";
 
 // resolve the native tsc (tsgo) binary shipped with typescript@7 for dts generation
@@ -13,6 +14,12 @@ const tsgoPath = join(
 );
 
 export default defineConfig({
+  define: {
+    __VUE_OPTIONS_API__: "true",
+    __VUE_PROD_DEVTOOLS__: "false",
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "false",
+  },
+
   // Library build (`vp pack`)
   pack: {
     dts: {
@@ -20,20 +27,37 @@ export default defineConfig({
     },
   },
 
-  // Vitest configuration
+  // Vitest configuration (`vp test`, Browser Mode)
   test: {
-    environment: "happy-dom",
     include: ["tests/**/*.test.ts"],
+    browser: {
+      enabled: true,
+      headless: true,
+      provider: playwright(),
+      instances: [{ browser: "chromium" }],
+      screenshotFailures: false,
+    },
   },
 
-  // Oxlint configuration
+  // Oxlint configuration (`vp lint` / `vp check`, incl. type checking)
   lint: {
     ignorePatterns: ["dist/**"],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
   },
 
-  // Oxfmt configuration
+  // Oxfmt configuration (`vp fmt`)
   fmt: {
     semi: true,
     singleQuote: false,
+  },
+
+  // Vite Task definitions (`vpr <task>`)
+  run: {
+    tasks: {
+      dev: { command: "vp dev", cwd: "examples/vue-tsx" },
+    },
   },
 });

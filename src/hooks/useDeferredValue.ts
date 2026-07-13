@@ -31,7 +31,7 @@ export const useDeferredValue = <T>(value: T, initialValue?: T): T => {
   if (!Object.is(record.value, value) && !record.scheduled) {
     record.scheduled = true;
     // keep the previous value for this render, catch up on the next flush
-    nextTick(() => {
+    void nextTick(() => {
       record.scheduled = false;
       if (!Object.is(record.value, record.next)) {
         record.value = record.next;

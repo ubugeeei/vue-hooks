@@ -225,7 +225,7 @@ export const setupHooks = (instance: ComponentInternalInstance) => {
     // StrictMode: render one extra time after mount to surface impure renders
     instance[ComponentStrict] = inject(StrictModeKey, false);
     if (instance[ComponentStrict]) {
-      nextTick(() => scheduleRender(instance));
+      void nextTick(() => scheduleRender(instance));
     }
   }
 

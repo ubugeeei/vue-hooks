@@ -28,7 +28,7 @@ export const Form = defineComponent({
       e.preventDefault();
       const form = e.target as HTMLFormElement;
       const data = new FormData(form);
-      const method = String(attrs.method ?? "get").toLowerCase();
+      const method = typeof attrs.method === "string" ? attrs.method.toLowerCase() : "get";
       status.value = { pending: true, data, method, action: props.action };
       try {
         await props.action(data);
