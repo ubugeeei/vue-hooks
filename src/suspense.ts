@@ -1,15 +1,5 @@
-import {
-  PropType,
-  VNodeChild,
-  defineComponent,
-  onErrorCaptured,
-  shallowRef,
-} from "vue";
-
-const isThenable = (value: unknown): value is PromiseLike<unknown> =>
-  value !== null &&
-  (typeof value === "object" || typeof value === "function") &&
-  typeof (value as PromiseLike<unknown>).then === "function";
+import { type PropType, type VNodeChild, defineComponent, onErrorCaptured, shallowRef } from "vue";
+import { isThenable } from "./hooks/internal";
 
 /**
  * React style Suspense boundary.
@@ -32,15 +22,13 @@ export const Suspense = defineComponent({
       pendingCount.value++;
       err.then(
         () => pendingCount.value--,
-        () => pendingCount.value--
+        () => pendingCount.value--,
       );
       // suspend: stop propagation and show the fallback
       return false;
     });
 
     return () =>
-      pendingCount.value > 0
-        ? slots.fallback?.() ?? props.fallback
-        : slots.default?.();
+      pendingCount.value > 0 ? (slots.fallback?.() ?? props.fallback) : slots.default?.();
   },
 });
