@@ -14,7 +14,8 @@ export const OptimisticSample = defineComponent(() => () => {
   ]);
 
   const action = async (formData: FormData) => {
-    const message = String(formData.get("message") ?? "");
+    const value = formData.get("message");
+    const message = typeof value === "string" ? value : "";
     if (!message) return;
     addOptimistic(message);
     const sent = await send(message);

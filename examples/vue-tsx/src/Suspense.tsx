@@ -22,14 +22,7 @@ export const SuspenseSample = defineComponent(() => () => {
   );
 });
 
-const UserName = defineComponent(
-  (props: { userId: number }) => () => {
-    const user = use(getUser(props.userId));
-    return <p>{user.name}</p>;
-  },
-  {
-    props: {
-      userId: { type: Number, required: true },
-    },
-  },
-);
+const UserName = defineComponent((props: { userId: number }) => () => {
+  const user = use(getUser(props.userId));
+  return <p>{user.name}</p>;
+});
