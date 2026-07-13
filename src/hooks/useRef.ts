@@ -1,24 +1,20 @@
 import { ref as vueRef, Ref, getCurrentInstance } from "vue";
-import { ComponentStates, ComponentStatesIdx } from "./internal";
+import { ComponentRefs, ComponentRefsIdx, setupHooks } from "./internal";
 
 export const useRef = <T>(initialState: T): Ref<T> => {
   const i = getCurrentInstance();
-  if (!i) throw new Error("useState must be called in setup function");
+  if (!i) throw new Error("useRef must be called in setup function");
+  setupHooks(i);
 
-  // init
-  if (i[ComponentStates] === undefined) i[ComponentStates] = [];
-  if (i[ComponentStatesIdx] === undefined) i[ComponentStatesIdx] = 0;
-
-  const currentIdx = i[ComponentStatesIdx];
+  const currentIdx = i[ComponentRefsIdx]!++;
 
   let ref: ReturnType<typeof vueRef>;
-  if (i[ComponentStates][currentIdx] === undefined) {
+  if (i[ComponentRefs]![currentIdx] === undefined) {
     ref = vueRef<T>(initialState);
-    i[ComponentStates][currentIdx] = ref;
+    i[ComponentRefs]![currentIdx] = ref;
   } else {
-    ref = i[ComponentStates][currentIdx];
+    ref = i[ComponentRefs]![currentIdx];
   }
-  i[ComponentStatesIdx]++;
 
   return ref as Ref<T>;
 };
