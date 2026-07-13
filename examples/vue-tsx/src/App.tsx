@@ -6,6 +6,8 @@ import { MemoSample } from "./Memo";
 import { CallBackSample } from "./Callback";
 import { ReducerSample } from "./Reducer";
 import { ContextSample } from "./Context";
+import { SuspenseSample } from "./Suspense";
+import { ActionStateSample } from "./ActionState";
 
 export default defineComponent(() => () => {
   return (
@@ -40,6 +42,14 @@ export default defineComponent(() => () => {
 
       <h1>useContext</h1>
       <ContextSample />
+      <hr />
+
+      <h1>use / Suspense</h1>
+      <SuspenseSample />
+      <hr />
+
+      <h1>useActionState</h1>
+      <ActionStateSample />
     </div>
   );
 });

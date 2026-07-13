@@ -30,6 +30,9 @@ export default defineComponent(() => () => {
 
 ### batches state updates
 
+State updates are queued through Vue's scheduler.
+Calling `setState` multiple times in the same tick results in a single re-render.
+
 ```tsx
 import { defineComponent } from "vue";
 import { useState } from "vue-hooks";
@@ -85,6 +88,9 @@ export default defineComponent(() => () => {
 ```
 
 ## useEffect
+
+The effect callback runs **after** the component is mounted, and re-runs after the DOM has been patched when one of the deps has changed (omit the deps to run after every render).
+The cleanup function runs before the effect re-runs, and when the component is unmounted.
 
 ```tsx
 import { defineComponent } from "vue";
@@ -325,5 +331,91 @@ export const ContextSample = defineComponent(() => () => {
 const Child = defineComponent(() => () => {
   const count = useContext(CounterContext);
   return <div>{count}</div>;
+});
+```
+
+## use / Suspense
+
+`use` reads the value of a promise (or a context).
+While the promise is pending, the component suspends and the nearest `Suspense` boundary renders its fallback.
+Once the promise settles, the boundary re-renders its children and `use` returns the resolved value.
+
+NOTE: the promise identity must be stable across renders (create it outside of the component or cache it), otherwise the component suspends forever.
+
+```tsx
+import { defineComponent } from "vue";
+import { Suspense, use } from "vue-hooks";
+
+type User = { id: number; name: string };
+
+const fetchUser = (id: number): Promise<User> =>
+  fetch(`/api/users/${id}`).then((res) => res.json());
+
+// the promise identity must be stable across renders
+const cache = new Map<number, Promise<User>>();
+const getUser = (id: number) => {
+  let user = cache.get(id);
+  if (!user) {
+    user = fetchUser(id);
+    cache.set(id, user);
+  }
+  return user;
+};
+
+export default defineComponent(() => () => (
+  <Suspense fallback={<p>loading...</p>}>
+    <Profile userId={1} />
+  </Suspense>
+));
+
+const Profile = defineComponent(
+  (props: { userId: number }) => () => {
+    const user = use(getUser(props.userId));
+    return <p>{user.name}</p>;
+  },
+  {
+    props: {
+      userId: { type: Number, required: true },
+    },
+  }
+);
+```
+
+`use` can also read a context, just like `useContext`:
+
+```tsx
+const count = use(CounterContext);
+```
+
+## useActionState
+
+Wraps an async action and exposes the latest result and a pending flag.
+Dispatching runs the action with the previous state and the given payload, and re-renders when it settles.
+
+```tsx
+import { defineComponent } from "vue";
+import { useActionState } from "vue-hooks";
+
+const addToCart = async (prev: string[], item: string): Promise<string[]> => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return [...prev, item];
+};
+
+export default defineComponent(() => () => {
+  const [items, dispatch, isPending] = useActionState(addToCart, [] as string[]);
+
+  return (
+    <div>
+      <button disabled={isPending} onClick={() => dispatch("apple")}>
+        add apple
+      </button>
+      {isPending && <p>adding...</p>}
+      <ul>
+        {items.map((item, idx) => (
+          <li key={idx}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
 });
 ```
