@@ -1,14 +1,8 @@
 import { InjectionKey, PropType, defineComponent, inject, provide } from "vue";
 
-class _Wrapper_<T> {
-  private f(v: T) {
-    return createContext<T>(v);
-  }
-}
-
 const Key = Symbol();
 
-type Context<T> = ReturnType<_Wrapper_<T>["f"]>;
+export type Context<T> = ReturnType<typeof createContext<T>>;
 export const createContext = <T>(value: T | null) => {
   const key: InjectionKey<{ value: T }> = Symbol();
 
