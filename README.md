@@ -215,19 +215,13 @@ export default defineComponent(() => () => {
   );
 });
 
-const Btn = defineComponent(
-  ({ onClick }) =>
-    () => {
-      console.log("rendered");
-      return <button onClick={onClick}>Click</button>;
-    },
-  {
-    props: {
-      onClick: { type: Function as PropType<(payload: MouseEvent) => void> },
-    },
-  },
-);
+const Btn = defineComponent(({ onClick }: { onClick?: (payload: MouseEvent) => void }) => () => {
+  console.log("rendered");
+  return <button onClick={onClick}>Click</button>;
+});
 ```
+
+NOTE: runtime `props` declarations are inferred from the TS type annotations by enabling `resolveType` in `@vitejs/plugin-vue-jsx`.
 
 ## useRef
 
@@ -371,17 +365,10 @@ export default defineComponent(() => () => (
   </Suspense>
 ));
 
-const Profile = defineComponent(
-  (props: { userId: number }) => () => {
-    const user = use(getUser(props.userId));
-    return <p>{user.name}</p>;
-  },
-  {
-    props: {
-      userId: { type: Number, required: true },
-    },
-  },
-);
+const Profile = defineComponent((props: { userId: number }) => () => {
+  const user = use(getUser(props.userId));
+  return <p>{user.name}</p>;
+});
 ```
 
 `use` can also read a context, just like `useContext`:
@@ -604,14 +591,11 @@ Exposes a custom handle on a ref passed down from the parent, instead of the raw
 import { defineComponent } from "vue";
 import { useImperativeHandle, useRef } from "vue-hooks";
 
-const FancyInput = defineComponent(
-  (props: { handle: Ref<{ focus: () => void } | null> }) => () => {
-    const inputRef = useRef<HTMLInputElement | null>(null);
-    useImperativeHandle(props.handle, () => ({ focus: () => inputRef.value?.focus() }), []);
-    return <input ref={inputRef} />;
-  },
-  { props: { handle: { type: Object, required: true } } },
-);
+const FancyInput = defineComponent((props: { handle: Ref<{ focus: () => void } | null> }) => () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useImperativeHandle(props.handle, () => ({ focus: () => inputRef.value?.focus() }), []);
+  return <input ref={inputRef} />;
+});
 
 export default defineComponent(() => () => {
   const handle = useRef<{ focus: () => void } | null>(null);
@@ -682,14 +666,11 @@ getUser(1) === getUser(1); // true
 `cacheSignal()` returns an `AbortSignal` scoped to the lifetime of the current component (aborted when it unmounts), or `null` outside of a component.
 
 ```tsx
-const UserName = defineComponent(
-  (props: { userId: number }) => () => {
-    const signal = cacheSignal();
-    const user = use(getUser(props.userId, signal));
-    return <p>{user.name}</p>;
-  },
-  { props: { userId: { type: Number, required: true } } },
-);
+const UserName = defineComponent((props: { userId: number }) => () => {
+  const signal = cacheSignal();
+  const user = use(getUser(props.userId, signal));
+  return <p>{user.name}</p>;
+});
 ```
 
 ## act
@@ -710,12 +691,17 @@ it("increments", async () => {
 
 # Development
 
-This repository is a [Vite+](https://viteplus.dev/) workspace. Everything is configured from the root `vite.config.ts`.
+This repository is a [Vite+](https://viteplus.dev/) workspace on pnpm v11 (dependency versions are managed with the pnpm catalog).
+Everything is configured from the root `vite.config.ts` — there are no npm scripts; use `vp` and `vpr` directly.
 
 ```bash
-vp install         # install dependencies
-vp run vue-tsx#dev # start the example app (examples/vue-tsx)
-vp test            # run the unit tests (Vitest)
-vp check           # format, lint, and type check
-vp pack            # build the library (dist/)
+vp install # install dependencies
+vpr dev    # start the example app (examples/vue-tsx)
+vp test    # run the unit tests (Vitest Browser Mode, Chromium)
+vp check   # format, lint, and type check
+vp pack    # build the library (dist/)
 ```
+
+# License
+
+[MIT](./LICENSE)
