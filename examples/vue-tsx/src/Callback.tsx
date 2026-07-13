@@ -1,4 +1,4 @@
-import { PropType, defineComponent } from "vue";
+import { type PropType, defineComponent } from "vue";
 import { useCallback, useState } from "vue-hooks";
 
 export const CallBackSample = defineComponent(() => () => {
@@ -30,5 +30,5 @@ const Btn = defineComponent(
     props: {
       onClick: { type: Function as PropType<(payload: MouseEvent) => void> },
     },
-  }
+  },
 );

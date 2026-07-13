@@ -8,7 +8,7 @@ import {
 
 export const useActionState = <S, P = void>(
   action: (prevState: S, payload: P) => S | Promise<S>,
-  initialState: S
+  initialState: S,
 ): [state: S, dispatch: (payload: P) => Promise<void>, isPending: boolean] => {
   const i = getCurrentInstance();
   if (!i) throw new Error("useActionState must be called in setup function");

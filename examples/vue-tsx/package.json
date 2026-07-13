@@ -1,21 +1,22 @@
 {
   "name": "vue-tsx",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@vitejs/plugin-vue-jsx": "^3.0.1",
-    "vue": "^3.3.0"
+    "vue": "^3.5.39"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.1.0",
-    "typescript": "^5.0.2",
-    "vite": "^4.3.2",
-    "vue-tsc": "^1.4.2"
+    "@vitejs/plugin-vue-jsx": "^5.1.6",
+    "@voidzero-dev/vite-plus-core": "^0.2.4",
+    "typescript": "^7.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@^0.2.4",
+    "vite-plus": "^0.2.4"
   }
 }

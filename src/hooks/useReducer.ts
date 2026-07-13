@@ -1,16 +1,11 @@
 import { getCurrentInstance } from "vue";
-import {
-  ComponentReducers,
-  ComponentReducersIdx,
-  scheduleRender,
-  setupHooks,
-} from "./internal";
+import { ComponentReducers, ComponentReducersIdx, scheduleRender, setupHooks } from "./internal";
 
 export type Reducer<S, A> = (prevState: S, action: A) => S;
 
 export const useReducer = <S, A>(
   reducer: Reducer<S, A>,
-  initialState: S
+  initialState: S,
 ): [state: S, dispatch: (action: A) => void] => {
   const i = getCurrentInstance();
   if (!i) throw new Error("useReducer must be called in setup function");

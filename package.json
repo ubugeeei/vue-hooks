@@ -1,18 +1,56 @@
 {
   "name": "vue-hooks",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "\"Non-Reactive API\", a new API concept in Vue.js. (inspired by React)",
   "keywords": [],
-  "author": "Ubugeeei <ubuge1122@gmail.com>",
   "license": "ISC",
-  "dependencies": {
-    "vue": "^3.2.47"
+  "author": "ubugeeei <ubuge1122@gmail.com>",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "dev": "vp run vue-tsx#dev",
+    "build": "vp pack",
+    "test": "vp test",
+    "check": "vp check",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^18.16.3"
+    "@types/node": "^26.1.1",
+    "@voidzero-dev/vite-plus-core": "^0.2.4",
+    "happy-dom": "^20.10.6",
+    "typescript": "^7.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@^0.2.4",
+    "vite-plus": "^0.2.4",
+    "vitest": "4.1.10",
+    "vue": "^3.5.39"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@^0.2.4",
+      "vitest": "4.1.10"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "vite": "*"
+      }
+    }
   }
 }

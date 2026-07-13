@@ -30,9 +30,7 @@ export const MemoSample = defineComponent(() => () => {
         <button onClick={() => setCount(count + 1)}>+1</button>
       </div>
 
-      <button onClick={() => setIsDone(!isDone)}>
-        {isDone ? "show not done" : "show done"}
-      </button>
+      <button onClick={() => setIsDone(!isDone)}>{isDone ? "show not done" : "show done"}</button>
       <ul>
         {visibleTodos.map((todo) => (
           <li key={todo.id}>{todo.text}</li>

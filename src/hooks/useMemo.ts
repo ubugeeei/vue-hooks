@@ -1,10 +1,5 @@
 import { getCurrentInstance } from "vue";
-import {
-  ComponentMemos,
-  ComponentMemosIdx,
-  isChangedDeps,
-  setupHooks,
-} from "./internal";
+import { ComponentMemos, ComponentMemosIdx, isChangedDeps, setupHooks } from "./internal";
 
 export const useMemo = <T>(callBack: () => T, nextDeps: any[]): T => {
   const i = getCurrentInstance();

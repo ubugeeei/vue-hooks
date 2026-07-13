@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { Reducer, useReducer } from "vue-hooks";
+import { type Reducer, useReducer } from "vue-hooks";
 
 type State = number;
 type Action = { type: "increment" | "decrement" | "reset" };

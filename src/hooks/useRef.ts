@@ -1,4 +1,4 @@
-import { ref as vueRef, Ref, getCurrentInstance } from "vue";
+import { type Ref, getCurrentInstance, ref as vueRef } from "vue";
 import { ComponentRefs, ComponentRefsIdx, setupHooks } from "./internal";
 
 export const useRef = <T>(initialState: T): Ref<T> => {

@@ -1,15 +1,7 @@
 import { getCurrentInstance } from "vue";
-import {
-  ComponentCallbacks,
-  ComponentCallbacksIdx,
-  isChangedDeps,
-  setupHooks,
-} from "./internal";
+import { ComponentCallbacks, ComponentCallbacksIdx, isChangedDeps, setupHooks } from "./internal";
 
-export const useCallback = <T extends Function>(
-  callBack: T,
-  nextDeps: any[]
-): T => {
+export const useCallback = <T extends Function>(callBack: T, nextDeps: any[]): T => {
   const i = getCurrentInstance();
   if (!i) throw new Error("useCallback must be called in setup function");
   setupHooks(i);

@@ -1,13 +1,11 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+import { defineConfig } from "vite-plus";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
-      "vue-hooks": `${process.cwd()}/../../src`,
+      "vue-hooks": new URL("../../src", import.meta.url).pathname,
     },
   },
-  plugins: [vue(), vueJsx()],
+  plugins: [vueJsx()],
 });
