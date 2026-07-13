@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "24"
+          cache: true
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Install Playwright Chromium
+        run: vp exec playwright install chromium --with-deps
+
+      - name: Check (format, lint, type check)
+        run: vp check
+
+      - name: Test (Vitest Browser Mode)
+        run: vp test
+
+      - name: Build library
+        run: vp pack
