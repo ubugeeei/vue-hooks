@@ -22,6 +22,7 @@
     "@types/node": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@voidzero-dev/vite-plus-core": "catalog:",
+    "playwright": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:",

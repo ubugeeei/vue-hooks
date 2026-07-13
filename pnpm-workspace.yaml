@@ -6,6 +6,7 @@ catalog:
   "@vitejs/plugin-vue-jsx": ^5.1.6
   "@vitest/browser-playwright": 4.1.10
   "@voidzero-dev/vite-plus-core": ^0.2.4
+  playwright: ^1.61.1
   typescript: ^7.0.2
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.4
   vite-plus: ^0.2.4
